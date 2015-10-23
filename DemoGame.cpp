@@ -40,7 +40,7 @@ using namespace physx;
 //=============================================================================
 // CLASS DemoGame
 //=============================================================================
-class DemoGame: public Engine
+class DemoGame: public GameEngine
 {
 public:
 
@@ -63,7 +63,7 @@ public:
 
 	virtual bool init() override
 	{
-		Engine::init();
+		GameEngine::init();
 
 		addComponent<WindowManager>();
 		addComponent<RenderManager>();
@@ -92,7 +92,7 @@ public:
 	{
 		unloadLevel();
 
-		return Engine::cleanup();
+		return GameEngine::cleanup();
 	}
 
 
@@ -111,9 +111,9 @@ public:
 
 
 
-EngineRef IEngine::Instance()
+GameEngineRef IGameEngine::Instance()
 {
-	static EngineRef sGame(new DemoGame);
+	static GameEngineRef sGame(new DemoGame);
 	return sGame;
 }
 

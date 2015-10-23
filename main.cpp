@@ -9,12 +9,12 @@
 // the entry point for any Windows program
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	IEngine::Instance()->init();
+	IGameEngine::Instance()->init();
 
-	while (IEngine::Instance()->run())
+	while (IGameEngine::Instance()->run())
 	{}
 
-	IEngine::Instance()->cleanup();
+	IGameEngine::Instance()->cleanup();
 	return 0;
 }
 
