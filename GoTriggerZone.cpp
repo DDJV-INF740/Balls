@@ -11,8 +11,8 @@
 #include "Core/Rendering/IRenderPrimitive.h"
 #include "Assets/Models/ModelRendering.h"
 #include "Core/Components/ICollisionHandler.h"
-#include "Core/GameManagers/IGameRendering.h"
-#include "Core/GameManagers/IGameSimulation.h"
+#include "Core/GameManagers/IRenderManager.h"
+#include "Core/GameManagers/ISimulationManager.h"
 #include "Loader/Models/ModelFactory.h"
 #include "CollisionTypes.h"
 #include "Core/GameObjects/GameObjectFactory.h"
@@ -62,10 +62,10 @@ public:
 	//
 	int load()
 	{
-		_model = new DotXModel(Game<IGameRendering>()->d3dDevice(), "assets/area.x", "assets/");
+		_model = new DotXModel(Game<IRenderManager>()->d3dDevice(), "assets/area.x", "assets/");
 
 		// create the physic object
-		PxPhysics &physics = Game<IGameSimulation>()->physics();
+		PxPhysics &physics = Game<ISimulationManager>()->physics();
 
 		_convexMesh = ModelFactory::convexMeshFromModel(*_model);
 

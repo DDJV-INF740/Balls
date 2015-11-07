@@ -15,7 +15,7 @@
 #include "Assets/Models/ModelRendering.h"
 #include "Core/GameObjects/IGameObjectData.h"
 #include "Core/GameObjects/IGameObject.h"
-#include "Core/GameManagers/IGameRendering.h"
+#include "Core/GameManagers/IRenderManager.h"
 #include "Engine/GameObjects/GameObject.h"
 #include "Core/GameObjects/GameObjectFactory.h"
 #include "CollisionTypes.h"
@@ -50,14 +50,14 @@ public:
 	{
 		//---------------------------------------------------------------------
 		// create the physic object
-		PxPhysics &physics = Game<IGameSimulation>()->physics();
+		PxPhysics &physics = Game<ISimulationManager>()->physics();
 
 		//static friction, dynamic friction, restitution
 		_material = physics.createMaterial(0.5f, 0.5f, 0.1f); 
 
 		//---------------------------------------------------------------------
 		// create the render object
-		_model = new DotXModel(Game<IGameRendering>()->d3dDevice(), "assets/ship.x", "assets/");
+		_model = new DotXModel(Game<IRenderManager>()->d3dDevice(), "assets/ship.x", "assets/");
 
 		return 0;
 	}

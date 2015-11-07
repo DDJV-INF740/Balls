@@ -7,7 +7,7 @@
 #include "Engine/Components/InputComponent.h"
 #include "Engine/Managers/SpawnManager.h"
 #include "Core/Game/Game.h"
-#include "Core/GameManagers/IGameTime.h"
+#include "Core/GameManagers/ITimeManager.h"
 #include "Engine/Components/SimulationComponent.h"
 #include "PxPhysicsAPI.h"
 
@@ -45,16 +45,16 @@ void PlayerBehaviour::update( const GameObjectRef &iGameObject )
 	if (keyboardInput->isPressed(KEY_ABUTTON))
 	{
 		const int kMaxFireRate = 10;
-		if (Game<IGameTime>()->currentTime() - _state._lastFireTime > 1.0f/kMaxFireRate)
+		if (Game<ITimeManager>()->currentTime() - _state._lastFireTime > 1.0f/kMaxFireRate)
 		{
 			PxTransform pose = poseInterface->pose();
 			PxVec3 frontVec = pose.q.rotate(PxVec3(0, 0, -1));
 			PxVec3 spawnPos = pose.p + frontVec*1;
-			GameObjectRef ball = Game<IGameSpawner>()->spawn<GoBall>(PxTransform(spawnPos, pose.q));
+			GameObjectRef ball = Game<ISpawnManager>()->spawn<GoBall>(PxTransform(spawnPos, pose.q));
 
 			PxVec3 ballSpeed = pose.q.rotate(PxVec3(0, 0, -15.0f));
 			ball->as<IDynamicSimulationInterface>()->pxActor().setLinearVelocity(PxVec3(ballSpeed .x, ballSpeed .y, ballSpeed .z));
-			_state._lastFireTime = Game<IGameTime>()->currentTime();
+			_state._lastFireTime = Game<ITimeManager>()->currentTime();
 		}
 	}
 

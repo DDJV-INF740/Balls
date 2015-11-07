@@ -14,7 +14,7 @@
 #include "Engine/Components/SimulationComponent.h"
 #include "Import/DotX/DotXModel.h"
 #include "Assets/Models/ModelRendering.h"
-#include "Core//GameManagers/IGameRendering.h"
+#include "Core//GameManagers/IRenderManager.h"
 #include "Core/GameObjects/IGameObjectData.h"
 #include "Engine/GameObjects/GameObject.h"
 #include "CollisionTypes.h"
@@ -45,10 +45,10 @@ public:
 	{
 		// load the .x model
 		const char *modelFile = "assets/cow.x";
-		_model = new DotXModel(Game<IGameRendering>()->d3dDevice(), modelFile, "assets/");
+		_model = new DotXModel(Game<IRenderManager>()->d3dDevice(), modelFile, "assets/");
 
 		// create the physic object
-		PxPhysics &physics = Game<IGameSimulation>()->physics();
+		PxPhysics &physics = Game<ISimulationManager>()->physics();
 		_material = physics.createMaterial(0.5f, 0.5f, 0.1f);    //static friction, dynamic friction, restitution
 
 		return 0;

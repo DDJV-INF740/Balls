@@ -4,12 +4,12 @@
 #include "Core/GameObjects/IGameObject.h"
 #include "Core/GameObjects/IGameObjectData.h"
 #include "Assets/Models/MeshModel.h"
-#include "Core/GameManagers/IGameSimulation.h"
+#include "Core/GameManagers/ISimulationManager.h"
 #include "Core/Game/Game.h"
-#include "Core/GameManagers/IGameRendering.h"
+#include "Core/GameManagers/IRenderManager.h"
 #include "Core/GameObjects/IBehaviour.h"
-#include "Core/GameManagers/IGameTime.h"
-#include "Core/GameManagers/IGameSpawner.h"
+#include "Core/GameManagers/ITimeManager.h"
+#include "Core/GameManagers/ISpawnManager.h"
 #include "Engine/GameObjects/GameObject.h"
 #include "Engine/Components/RenderComponent.h"
 #include "Assets/Models/ModelRendering.h"
@@ -45,7 +45,7 @@ public:
 
 		// create the physic object
 
-		_material =  Game<IGameSimulation>()->physics().createMaterial(0.5f, 0.5f, 0.1f);    //static friction, dynamic friction, restitution
+		_material =  Game<ISimulationManager>()->physics().createMaterial(0.5f, 0.5f, 0.1f);    //static friction, dynamic friction, restitution
 
 		//----------------------------------------------------------
 		// create the render object
@@ -85,13 +85,13 @@ private:
 public:
 	BallBehaviour()
 	{
-		_state._spawnTime = Game<IGameTime>()->currentTime();
+		_state._spawnTime = Game<ITimeManager>()->currentTime();
 	}
 
 	virtual void update(const GameObjectRef &iGameObject) override
 	{
-		if (Game<IGameTime>()->currentTime() - _state._spawnTime > 10)
-			Game<IGameSpawner>()->unspawn(iGameObject);
+		if (Game<ITimeManager>()->currentTime() - _state._spawnTime > 10)
+			Game<ISpawnManager>()->unspawn(iGameObject);
 	}
 };
 

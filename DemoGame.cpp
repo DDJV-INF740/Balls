@@ -7,7 +7,7 @@
 #include "Engine/Managers/SpawnManager.h"
 #include "Engine/Tasks/SpawnTask.h"
 #include "Core/Game/Game.h"
-#include "Core/GameManagers/IGameSpawner.h"
+#include "Core/GameManagers/ISpawnManager.h"
 #include "GoSkybox.h"
 #include "GoTerrain.h"
 #include "GoPlayer.h"
@@ -104,8 +104,8 @@ public:
 	void unloadLevel()
 	{
 		// unspawn every remaining objects
-		Game<IGameSpawner>()->unspawnAll();
-		Game<IGameSpawner>()->update();
+		Game<ISpawnManager>()->unspawnAll();
+		Game<ISpawnManager>()->update();
 	}
 };
 
@@ -118,23 +118,20 @@ GameEngineRef IGameEngine::Instance()
 }
 
 
-
-
-
 void DemoGame::loadLevel()
 {
-	Game<IGameSpawner>()->spawn<GoSkyBox>(PxTransform(PxVec3(0, 0, 0)));
-	Game<IGameSpawner>()->spawn<GoTerrain>(PxTransform(PxVec3(0, 0, 0)));
+	Game<ISpawnManager>()->spawn<GoSkyBox>(PxTransform(PxVec3(0, 0, 0)));
+	Game<ISpawnManager>()->spawn<GoTerrain>(PxTransform(PxVec3(0, 0, 0)));
 
 	// spawn the player
-	GameObjectRef _player = Game<IGameSpawner>()->spawn<GoPlayer>(PxTransform(PxVec3(0, 0, 0)));
+	GameObjectRef _player = Game<ISpawnManager>()->spawn<GoPlayer>(PxTransform(PxVec3(0, 0, 0)));
 	_player->addComponent<KeyboardInputComponent>();
 	_player->addComponent<PlayerComponent>()->setBehaviour(IBehaviourRef(new PlayerBehaviour));
 
-	Game<IGameSpawner>()->spawn<GoCow>(PxTransform(PxVec3(0, 0, 0)));
-	Game<IGameSpawner>()->spawn<GoTriggerZone>(PxTransform(PxVec3(20, 0, 20)));
+	Game<ISpawnManager>()->spawn<GoCow>(PxTransform(PxVec3(0, 0, 0)));
+	Game<ISpawnManager>()->spawn<GoTriggerZone>(PxTransform(PxVec3(20, 0, 20)));
 
-	Game<IGameSpawner>()->spawn<ICamera>(PxTransform(PxVec3(0, 0, 0)));
+	Game<ISpawnManager>()->spawn<ICamera>(PxTransform(PxVec3(0, 0, 0)));
 }
 
 

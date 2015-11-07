@@ -14,7 +14,7 @@
 #include "Core/GameObjects/IGameObjectData.h"
 #include "Core/GameObjects/IGameObject.h"
 #include "Engine/GameObjects/GameObject.h"
-#include "Core/GameManagers/IGameRendering.h"
+#include "Core/GameManagers/IRenderManager.h"
 #include "Core/GameObjects/GameObjectFactory.h"
 
 #include "Engine/Terrain/HeightMapData.h"

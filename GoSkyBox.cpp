@@ -10,11 +10,11 @@
 #include "Engine/Components/RenderComponent.h"
 #include "Engine/Rendering/SkyboxRenderData.h"
 #include "Engine/Rendering/SkyboxRendering.h"
-#include "Core/GameManagers/IGameRendering.h"
+#include "Core/GameManagers/IRenderManager.h"
 #include "Core/GameObjects/IGameObject.h"
 #include "Engine/GameObjects/GameObject.h"
 #include "Core/Components/IPoseInterface.h"
-#include "Core/GameManagers/IGameCameras.h"
+#include "Core/GameManagers/ICameraManager.h"
 #include "Engine/Components/FollowPoseComponent.h"
 
 using namespace physx;
@@ -31,7 +31,7 @@ public:
 	int load()
 	{
 		static const TCHAR *kTextureFileName = _T("assets/skybox.jpg");
-		LPDIRECT3DDEVICE9 d3ddev = Game<IGameRendering>()->d3dDevice();
+		LPDIRECT3DDEVICE9 d3ddev = Game<IRenderManager>()->d3dDevice();
 		_renderData.load(kTextureFileName, d3ddev);
 		return 0;
 	}
@@ -60,7 +60,7 @@ public:
 	//
 	virtual void onSpawn(const PxTransform &aPose) override
 	{
-		addComponent<FollowPoseComponent>()->follow(Game<IGameCameras>()->mainCamera());
+		addComponent<FollowPoseComponent>()->follow(Game<ICameraManager>()->mainCamera());
 
 		IRenderPrimitiveRef renderPrimitive(new SkyboxRendering(_data->_renderData));
 		addComponent<RenderComponent>()->setRenderPrimitive(renderPrimitive);
