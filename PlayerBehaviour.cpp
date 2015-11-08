@@ -12,6 +12,7 @@
 #include "PxPhysicsAPI.h"
 
 using namespace physx;
+using namespace engine;
 
 void PlayerBehaviour::update( const GameObjectRef &iGameObject )
 {

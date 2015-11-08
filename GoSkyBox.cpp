@@ -18,7 +18,7 @@
 #include "Engine/Components/FollowPoseComponent.h"
 
 using namespace physx;
-
+using namespace engine;
 //=============================================================================
 // CLASS SkyboxData
 //=============================================================================

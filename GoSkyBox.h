@@ -4,6 +4,8 @@
 //=============================================================================
 #include "Core/GameObjects/GameObjectFactory.h"
 
+using namespace engine;
+
 class GoSkyBox: public IGameObject
 {
 public:

@@ -4,6 +4,7 @@
 //=============================================================================
 #include "Core/Game/IGameEngine.h"
 
+using namespace engine;
 
 //-----------------------------------------------------------------------------
 // the entry point for any Windows program

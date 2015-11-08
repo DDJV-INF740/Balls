@@ -1,5 +1,7 @@
 #include "Core/GameObjects/IBehaviour.h"
 
+using namespace engine;
+
 class PlayerActorState
 {
 public:

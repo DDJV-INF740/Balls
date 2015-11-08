@@ -2,6 +2,8 @@
 
 #include "Core/GameObjects/IGameObject.h"
 
+using namespace engine;
+
 class GoPlayer: virtual public IGameObject
 {
 public:

@@ -37,6 +37,8 @@
 #include "Engine/Rendering/Camera.h"
 
 using namespace physx;
+using namespace engine;
+
 //=============================================================================
 // CLASS DemoGame
 //=============================================================================
