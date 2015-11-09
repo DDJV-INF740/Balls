@@ -34,18 +34,12 @@ class GoPlayerData: public IGameObjectData
 {
 public:
 	// physics
-	PxMaterial *_material;
-	PxShape *_actorShape;
+	physx::unique_ptr<PxMaterial> _material;
 
 	// rendering
-	DotXModel *_model;
+	std::unique_ptr<DotXModel> _model;
 
 public:
-	GoPlayerData()
-		: _material(nullptr)
-		, _model(nullptr)
-	{}
-
 	int load()
 	{
 		//---------------------------------------------------------------------
@@ -53,11 +47,11 @@ public:
 		PxPhysics &physics = Game<ISimulationManager>()->physics();
 
 		//static friction, dynamic friction, restitution
-		_material = physics.createMaterial(0.5f, 0.5f, 0.1f); 
+		_material = physx::unique_ptr<PxMaterial>(physics.createMaterial(0.5f, 0.5f, 0.1f)); 
 
 		//---------------------------------------------------------------------
 		// create the render object
-		_model = new DotXModel(Game<IRenderManager>()->d3dDevice(), "assets/ship.x", "assets/");
+		_model = std::make_unique<DotXModel>(Game<IRenderManager>()->d3dDevice(), "assets/ship.x", "assets/");
 
 		return 0;
 	}
@@ -76,7 +70,7 @@ public:
 	PxShape *_actorShape;
 
 public:
-	GoPlayerImp(const IGameObjectDataRef &aDataRef)
+	GoPlayerImp(const GameObjectDataRef &aDataRef)
 		: GameObject(aDataRef)
 		, _actorShape(nullptr)
 	{}
@@ -91,9 +85,9 @@ public:
 
 	//-------------------------------------------------------------------------
 	//
-	static IGameObjectData* loadData()
+	static std::shared_ptr<IGameObjectData> loadData()
 	{
-		GoPlayerData *data = new GoPlayerData();
+		std::shared_ptr<GoPlayerData> data = std::make_shared<GoPlayerData>();
 		data->load();
 		return data;
 	}
@@ -104,7 +98,7 @@ public:
 	{
 		// create the physic object
 
-		auto simulationComponent = addComponent<DynamicSimulationComponent>();
+		auto simulationComponent = createComponent<DynamicSimulationComponent>();
 		PxRigidDynamic &pxActor = simulationComponent->pxActor();
 		pxActor.setGlobalPose(aPose);
 
@@ -122,7 +116,7 @@ public:
 		// create the render object
 
 		// create the vertices using the CUSTOMVERTEX struct
-		addComponent<RenderComponent>()->setRenderPrimitive(IRenderPrimitiveRef(new ModelRendering(*_data->_model)));
+		createComponent<RenderComponent>()->setRenderPrimitive(IRenderPrimitiveRef(new ModelRendering(*_data->_model)));
 
 	}
 
@@ -138,4 +132,4 @@ public:
 IGameObject::IdType GoPlayer::TypeId()
 {	return GoPlayerImp::TypeId(); }
 
-RegisterGameObjectType<GoPlayerImp> gRegisterActor;
+RegisterGameObjectType<GoPlayerImp> gRegisterGameObject;

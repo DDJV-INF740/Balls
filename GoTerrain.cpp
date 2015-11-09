@@ -39,7 +39,7 @@ public:
 public:
 	//-------------------------------------------------------------------------
 	//
-	GoTerrainImp(const IGameObjectDataRef &aDataRef)
+	GoTerrainImp(const GameObjectDataRef &aDataRef)
 		: GameObject(aDataRef)
 		, _heightMapShape(nullptr)
 	{}
@@ -61,10 +61,10 @@ public:
 		// create the physic object
 		PxVec3 origPos(-_data->_renderData._scale.x/2.0f, 0.0f, -_data->_renderData._scale.z/2.0f);
 		PxTransform origTransform(origPos);
-		auto simulationComponent = addComponent<StaticSimulationComponent>();
+		auto simulationComponent = createComponent<StaticSimulationComponent>();
 		PxRigidStatic &pxActor = simulationComponent->pxActor();
 		pxActor.setGlobalPose(origTransform);
-		_heightMapShape = pxActor.createShape(PxHeightFieldGeometry(_data->_heightField, PxMeshGeometryFlag::eDOUBLE_SIDED, _data->_renderData._scale.y / 65535.0f, 1.0f*_data->_renderData._scale.x/_data->_renderData._width, 1.0f*_data->_renderData._scale.z/_data->_renderData._height), *_data->_material);
+		_heightMapShape = pxActor.createShape(PxHeightFieldGeometry(_data->_heightField.get(), PxMeshGeometryFlag::eDOUBLE_SIDED, _data->_renderData._scale.y / 65535.0f, 1.0f*_data->_renderData._scale.x/_data->_renderData._width, 1.0f*_data->_renderData._scale.z/_data->_renderData._height), *_data->_material);
 
 		PxFilterData filterData;
 		filterData.word0 = eACTOR_TERRAIN;
@@ -73,7 +73,7 @@ public:
 
 
 		// create the vertices using the CUSTOMVERTEX struct
-		addComponent<RenderComponent>()->setRenderPrimitive(IRenderPrimitiveRef(new HeightMapRendering(&_data->_renderData)));
+		createComponent<RenderComponent>()->setRenderPrimitive(IRenderPrimitiveRef(new HeightMapRendering(&_data->_renderData)));
 
 	}
 
@@ -93,4 +93,4 @@ IGameObject::IdType GoTerrain::TypeId()
 //=============================================================================
 // REGISTER Terrain
 //=============================================================================
-RegisterGameObjectType<GoTerrainImp> gRegisterActor;
+RegisterGameObjectType<GoTerrainImp> gRegisterGameObject;

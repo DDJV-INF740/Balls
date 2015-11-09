@@ -48,56 +48,31 @@ class TriggerCollider: public ICollisionHandler
 class TriggerActorData: public IGameObjectData
 {
 public:
-	DotXModel *_model;
-	PxMaterial *_material;
-	PxConvexMesh *_convexMesh;
-public:
-	TriggerActorData()
-		: _model(nullptr)
-		, _material(nullptr)
-		, _convexMesh(nullptr)
-	{}
+	std::unique_ptr<DotXModel> _model;
+	physx::unique_ptr<PxMaterial> _material;
+	physx::unique_ptr<PxConvexMesh> _convexMesh;
 
+public:
 	//-------------------------------------------------------------------------
 	//
 	int load()
 	{
-		_model = new DotXModel(Game<IRenderManager>()->d3dDevice(), "assets/area.x", "assets/");
+		_model = std::make_unique<DotXModel>(Game<IRenderManager>()->d3dDevice(), "assets/area.x", "assets/");
 
 		// create the physic object
 		PxPhysics &physics = Game<ISimulationManager>()->physics();
 
 		_convexMesh = ModelFactory::convexMeshFromModel(*_model);
 
-		_material = physics.createMaterial(0.5f, 0.5f, 0.1f);    //static friction, dynamic friction, restitution
+		_material = physx::unique_ptr<PxMaterial>(physics.createMaterial(0.5f, 0.5f, 0.1f));    //static friction, dynamic friction, restitution
 		return 0;
-	}
-
-	//-------------------------------------------------------------------------
-	//
-	~TriggerActorData()
-	{
-		delete _model;
-		_model = nullptr;
-
-		if (_material)
-		{
-			_material->release();
-			_material = nullptr;
-		}
-
-		if (_convexMesh)
-		{
-			_convexMesh->release();
-			_convexMesh = nullptr;
-		}
 	}
 };
 
 class GoTriggerZoneImp: public GameObject<GoTriggerZoneImp, TriggerActorData>
 {
 public:
-	GoTriggerZoneImp(const IGameObjectDataRef &aDataRef)
+	GoTriggerZoneImp(const GameObjectDataRef &aDataRef)
 		: GameObject(aDataRef)
 	{}
 
@@ -110,12 +85,12 @@ public:
 	//
 	virtual void onSpawn(const PxTransform &aPose) override
 	{
-		addComponent<RenderComponent>()->setRenderPrimitive(IRenderPrimitiveRef(new ModelRendering(*_data->_model)));
+		createComponent<RenderComponent>()->setRenderPrimitive(IRenderPrimitiveRef(new ModelRendering(*_data->_model)));
 
-		auto simulationComponent = addComponent<StaticSimulationComponent>();
+		auto simulationComponent = createComponent<StaticSimulationComponent>();
 		physx::PxRigidStatic &pxActor = simulationComponent->pxActor();
 		pxActor.setGlobalPose(aPose);
-		PxShape *actorShape = pxActor.createShape(PxConvexMeshGeometry(_data->_convexMesh), *_data->_material);
+		PxShape *actorShape = pxActor.createShape(PxConvexMeshGeometry(_data->_convexMesh.get()), *_data->_material);
 		actorShape->setFlag(PxShapeFlag::eSIMULATION_SHAPE, false);
 		actorShape->setFlag(PxShapeFlag::eTRIGGER_SHAPE, true);
 
@@ -141,5 +116,5 @@ IGameObject::IdType GoTriggerZone::TypeId()
 	return GoTriggerZoneImp::TypeId();
 }
 
-RegisterGameObjectType<GoTriggerZoneImp> gRegisterActor;
+RegisterGameObjectType<GoTriggerZoneImp> gRegisterGameObject;
 

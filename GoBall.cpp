@@ -24,64 +24,43 @@
 
 using namespace physx;
 using namespace engine;
+using namespace std::chrono;
 
 class GoBallData: public IGameObjectData
 {
 public:
-	typedef std::auto_ptr<MeshModel> MeshModelRef;
-	MeshModelRef _model;
-	PxMaterial *_material;
-	float _radius;
+	std::unique_ptr<MeshModel> _model;
+	physx::unique_ptr<PxMaterial> _material;
+	float _radius = 0.0f;
 
 public:
-	GoBallData()
-		: _material(nullptr)
-
-	{}
-
 	int load()
 	{
 		const float kRadius = 0.25f;
 		_radius = kRadius;
 
 		// create the physic object
-
-		_material =  Game<ISimulationManager>()->physics().createMaterial(0.5f, 0.5f, 0.1f);    //static friction, dynamic friction, restitution
+		ISimulationManagerRef simulation = Game<ISimulationManager>();
+		_material = physx::unique_ptr<PxMaterial>(simulation->physics().createMaterial(0.5f, 0.5f, 0.1f));    //static friction, dynamic friction, restitution
 
 		//----------------------------------------------------------
 		// create the render object
-		_model = MeshModelRef(ModelFactory::createSphere(kRadius));
+		_model = ModelFactory::createSphere(kRadius);
 
 		return 0;
-	}
-
-	~GoBallData()
-	{
-		// cleanup physics objects
-		if (_material)
-		{
-			_material->release();
-			_material = nullptr;
-		}
 	}
 };
 
 class GoBallState
 {
 public:
-	GoBallState()
-		: _spawnTime(0)
-	{}
-
-public:
-	double _spawnTime;
+	ITimeManager::time_point _spawnTime;
 };
 
 class BallBehaviour: virtual public IBehaviour
 {
 private:
 	GoBallState _state;
-
 
 public:
 	BallBehaviour()
@@ -91,7 +70,7 @@ public:
 
 	virtual void update(const GameObjectRef &iGameObject) override
 	{
-		if (Game<ITimeManager>()->currentTime() - _state._spawnTime > 10)
+		if (Game<ITimeManager>()->currentTime() - _state._spawnTime > 10s)
 			Game<ISpawnManager>()->unspawn(iGameObject);
 	}
 };
@@ -105,17 +84,17 @@ public:
 
 	//-------------------------------------------------------------------------
 	//
-	GoBallImp(const IGameObjectDataRef &aDataRef)
+	GoBallImp(const GameObjectDataRef &aDataRef)
 		: GameObject(aDataRef)
 	{}
 
 public:
 	virtual void onSpawn(const PxTransform &aPose) override
 	{
-		addComponent<RenderComponent>()->setRenderPrimitive(IRenderPrimitiveRef(new ModelRendering(*_data->_model)));
+		createComponent<RenderComponent>()->setRenderPrimitive(IRenderPrimitiveRef(new ModelRendering(*_data->_model)));
 
 		// setup simulation component
-		auto simulationComponent = addComponent<DynamicSimulationComponent>();
+		auto simulationComponent = createComponent<DynamicSimulationComponent>();
 		PxRigidDynamic &pxActor = simulationComponent->pxActor();
 		pxActor.setGlobalPose(aPose);
 		
@@ -126,7 +105,7 @@ public:
 		filterData.word1 = eACTOR_ENEMY | eACTOR_TERRAIN | eACTOR_BULLET;
 		actorShape->setSimulationFilterData(filterData);
 
-		addComponent<AIComponent>()->setBehaviour(IBehaviourRef(new BallBehaviour));
+		createComponent<AIComponent>()->setBehaviour(IBehaviourRef(new BallBehaviour));
 	}
 
 	//-------------------------------------------------------------------------
@@ -140,5 +119,5 @@ public:
 IGameObject::IdType GoBall::TypeId()
 {	return GoBallImp::TypeId(); }
 
-RegisterGameObjectType<GoBallImp> gRegisterActor;
+RegisterGameObjectType<GoBallImp> gRegisterGameObject;
 

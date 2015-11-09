@@ -13,6 +13,7 @@
 
 using namespace physx;
 using namespace engine;
+using namespace std::chrono;
 
 void PlayerBehaviour::update( const GameObjectRef &iGameObject )
 {
@@ -31,22 +32,22 @@ void PlayerBehaviour::update( const GameObjectRef &iGameObject )
 	}
 
 	static float kRotateStep = 0.02f; // angle in radians
-	if (keyboardInput->isPressed(KEY_RIGHT))
+	if (keyboardInput->isPressed(ControllerKey::KEY_RIGHT))
 	{
 		PxTransform transform = poseInterface->pose();
 		transform.q *= PxQuat(kRotateStep, PxVec3(0, 1, 0));
 		poseInterface->setPose(transform);
 	}
-	else if (keyboardInput->isPressed(KEY_LEFT))
+	else if (keyboardInput->isPressed(ControllerKey::KEY_LEFT))
 	{
 		PxTransform transform = poseInterface->pose();
 		transform.q *= PxQuat(-kRotateStep, PxVec3(0, 1, 0));
 		poseInterface->setPose(transform);
 	}
-	if (keyboardInput->isPressed(KEY_ABUTTON))
+	if (keyboardInput->isPressed(ControllerKey::KEY_ABUTTON))
 	{
-		const int kMaxFireRate = 10;
-		if (Game<ITimeManager>()->currentTime() - _state._lastFireTime > 1.0f/kMaxFireRate)
+		const int kMaxFireRate = 10; // per second
+		if (Game<ITimeManager>()->currentTime() - _state._lastFireTime > 1000ms/kMaxFireRate)
 		{
 			PxTransform pose = poseInterface->pose();
 			PxVec3 frontVec = pose.q.rotate(PxVec3(0, 0, -1));
@@ -59,7 +60,7 @@ void PlayerBehaviour::update( const GameObjectRef &iGameObject )
 		}
 	}
 
-	if (keyboardInput->isPressed(KEY_UP))
+	if (keyboardInput->isPressed(ControllerKey::KEY_UP))
 	{
 		PxTransform transform = poseInterface->pose();
 		PxVec3 frontVector = transform.q.rotate(PxVec3(0, 0, -1));
@@ -67,7 +68,7 @@ void PlayerBehaviour::update( const GameObjectRef &iGameObject )
 		transform.p += frontVector/10;
 		poseInterface->setPose(transform);
 	}
-	else if (keyboardInput->isPressed(KEY_DOWN))
+	else if (keyboardInput->isPressed(ControllerKey::KEY_DOWN))
 	{
 		PxTransform transform = poseInterface->pose();
 		PxVec3 frontVector = transform.q.rotate(PxVec3(0, 0, -1));
@@ -83,14 +84,14 @@ void PlayerBehaviour::update( const GameObjectRef &iGameObject )
 		// 			_pxActor->setLinearVelocity(v);
 	}
 
-	if (keyboardInput->isPressed(KEY_SHIFTBUTTON))
+	if (keyboardInput->isPressed(ControllerKey::KEY_SHIFTBUTTON))
 	{
 		PxTransform transform = poseInterface->pose();
 		transform.p.y += 0.1f;
 		poseInterface->setPose(transform);
 	}
 
-	if (keyboardInput->isPressed(KEY_CTRLBUTTON))
+	if (keyboardInput->isPressed(ControllerKey::KEY_CTRLBUTTON))
 	{
 		PxTransform transform = poseInterface->pose();
 		transform.p.y -= 0.1f;

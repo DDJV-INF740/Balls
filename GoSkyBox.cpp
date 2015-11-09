@@ -52,7 +52,7 @@ public:
 
 	//-------------------------------------------------------------------------
 	//
-	GoSkyBoxImp(const IGameObjectDataRef  &aDataRef)
+	GoSkyBoxImp(const GameObjectDataRef  &aDataRef)
 		: GameObject(aDataRef)
 	{}
 
@@ -60,10 +60,10 @@ public:
 	//
 	virtual void onSpawn(const PxTransform &aPose) override
 	{
-		addComponent<FollowPoseComponent>()->follow(Game<ICameraManager>()->mainCamera());
+		createComponent<FollowPoseComponent>()->follow(Game<ICameraManager>()->mainCamera());
 
 		IRenderPrimitiveRef renderPrimitive(new SkyboxRendering(_data->_renderData));
-		addComponent<RenderComponent>()->setRenderPrimitive(renderPrimitive);
+		createComponent<RenderComponent>()->setRenderPrimitive(renderPrimitive);
 	}
 
 	//-------------------------------------------------------------------------
@@ -84,4 +84,4 @@ IGameObject::IdType GoSkyBox::TypeId()
 //=============================================================================
 // REGISTER "Skybox"
 //=============================================================================
-RegisterGameObjectType<GoSkyBoxImp> gRegisterActor;
+RegisterGameObjectType<GoSkyBoxImp> gRegisterGameObject;

@@ -36,6 +36,8 @@
 #include "Engine/Managers/TimeManager.h"
 #include "Engine/Rendering/Camera.h"
 
+#include <memory>
+
 using namespace physx;
 using namespace engine;
 
@@ -58,33 +60,30 @@ public:
 		SPAWNTASK,
 	};
 
-
-	DemoGame()
-	{
-	}
+	DemoGame() = default;
 
 	virtual bool init() override
 	{
 		GameEngine::init();
 
-		addComponent<WindowManager>();
-		addComponent<RenderManager>();
-		addComponent<SimulationManager>();
-		addComponent<SpawnManager>();
-		addComponent<AIManager>();
-		addComponent<PlayerManager>();
-		addComponent<CameraManager>();
-		addComponent<GameLoopManager>();
-		addComponent<TimeManager>();
+		createComponent<WindowManager>();
+		createComponent<RenderManager>();
+		createComponent<SimulationManager>();
+		createComponent<SpawnManager>();
+		createComponent<AIManager>();
+		createComponent<PlayerManager>();
+		createComponent<CameraManager>();
+		createComponent<GameLoopManager>();
+		createComponent<TimeManager>();
 
-		addTask(new SpawnTask, SPAWNTASK);
-		addTask(new RenderTask, RENDERTASK);
-		addTask(new PlayerTask, PLAYERTASK);
-		addTask(new InputTask, INPUTTASK);
-		addTask(new AITask, AITASK);
-		addTask(new GameRulesTask, GAMERULESTASK);
-		addTask(new PhysicsTask, PHYSICSTASK);
-		addTask(new TimeTask, TIMERTASK);
+		addTask<SpawnTask>(SPAWNTASK);
+		addTask<RenderTask>(RENDERTASK);
+		addTask<PlayerTask>(PLAYERTASK);
+		addTask<InputTask>(INPUTTASK);
+		addTask<AITask>(AITASK);
+		addTask<GameRulesTask>(GAMERULESTASK);
+		addTask<PhysicsTask>(PHYSICSTASK);
+		addTask<TimeTask>(TIMERTASK);
 
 		loadLevel();
 		return true;
@@ -98,8 +97,7 @@ public:
 	}
 
 
-	~DemoGame()
-	{}
+	~DemoGame() = default;
 
 	void loadLevel();
 
@@ -111,30 +109,33 @@ public:
 	}
 };
 
-
-
-GameEngineRef IGameEngine::Instance()
+GameEngineRef& IGameEngine::Instance()
 {
-	static GameEngineRef sGame(new DemoGame);
+	static GameEngineRef sGame = std::make_shared<DemoGame>();
 	return sGame;
 }
 
 
 void DemoGame::loadLevel()
 {
+	// Skybox
 	Game<ISpawnManager>()->spawn<GoSkyBox>(PxTransform(PxVec3(0, 0, 0)));
+
+	// Terrain
 	Game<ISpawnManager>()->spawn<GoTerrain>(PxTransform(PxVec3(0, 0, 0)));
+	
+	// Player
+	GameObjectRef player = Game<ISpawnManager>()->spawn<GoPlayer>(PxTransform(PxVec3(0, 0, 0)));
+	player->createComponent<KeyboardInputComponent>();
+	player->createComponent<PlayerComponent>()->setBehaviour(IBehaviourRef(new PlayerBehaviour));
 
-	// spawn the player
-	GameObjectRef _player = Game<ISpawnManager>()->spawn<GoPlayer>(PxTransform(PxVec3(0, 0, 0)));
-	_player->addComponent<KeyboardInputComponent>();
-	_player->addComponent<PlayerComponent>()->setBehaviour(IBehaviourRef(new PlayerBehaviour));
-
+	// Cow
 	Game<ISpawnManager>()->spawn<GoCow>(PxTransform(PxVec3(0, 0, 0)));
+
+	// Trigger zone
 	Game<ISpawnManager>()->spawn<GoTriggerZone>(PxTransform(PxVec3(20, 0, 20)));
 
+	// Camera
 	Game<ISpawnManager>()->spawn<ICamera>(PxTransform(PxVec3(0, 0, 0)));
 }
-
-
 

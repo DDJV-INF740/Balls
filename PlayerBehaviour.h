@@ -1,4 +1,5 @@
 #include "Core/GameObjects/IBehaviour.h"
+#include "Core/GameManagers/ITimeManager.h"
 
 using namespace engine;
 
@@ -6,10 +7,10 @@ class PlayerActorState
 {
 public:
 	PlayerActorState()
-		: _lastFireTime(0)
+		: _lastFireTime()
 	{}
 
-	double _lastFireTime;
+	ITimeManager::time_point _lastFireTime;
 };
 
 

@@ -28,48 +28,23 @@ using namespace physx;
 class GoCowData: public IGameObjectData
 {
 public:
-	PxMaterial *_material;
-	IModel *_model;
+	physx::unique_ptr<PxMaterial> _material;
+	std::unique_ptr<IModel> _model;
 
 public:
-	//-------------------------------------------------------------------------
-	//
-	GoCowData()
-		: _material(nullptr)
-		, _model(nullptr)
-	{}
-
 	//-------------------------------------------------------------------------
 	//
 	int load()
 	{
 		// load the .x model
 		const char *modelFile = "assets/cow.x";
-		_model = new DotXModel(Game<IRenderManager>()->d3dDevice(), modelFile, "assets/");
+		_model = std::make_unique<DotXModel>(Game<IRenderManager>()->d3dDevice(), modelFile, "assets/");
 
 		// create the physic object
 		PxPhysics &physics = Game<ISimulationManager>()->physics();
-		_material = physics.createMaterial(0.5f, 0.5f, 0.1f);    //static friction, dynamic friction, restitution
+		_material = physx::unique_ptr<PxMaterial>(physics.createMaterial(0.5f, 0.5f, 0.1f));    //static friction, dynamic friction, restitution
 
 		return 0;
-	}
-
-	//-------------------------------------------------------------------------
-	//
-	~GoCowData()
-	{
-		// cleanup render objects
-	    if (_model)
-		{
-			delete _model;
-		}
-
-		// cleanup physics objects
-		if (_material)
-		{
-			_material->release();
-			_material = nullptr;
-		}
 	}
 };
 
@@ -82,7 +57,7 @@ public:
 	PxShape *_actorShape;
 
 public:
-	GoCowImp(const IGameObjectDataRef &aDataRef)
+	GoCowImp(const GameObjectDataRef &aDataRef)
 		: GameObject(aDataRef)
 		, _actorShape(nullptr)
 	{}
@@ -96,12 +71,12 @@ public:
 	//
 	virtual void onSpawn(const PxTransform &aPose) override
 	{
-		addComponent<RenderComponent>()->setRenderPrimitive(IRenderPrimitiveRef(new ModelRendering(*_data->_model)));
+		createComponent<RenderComponent>()->setRenderPrimitive(IRenderPrimitiveRef(new ModelRendering(*_data->_model)));
 
 		PxVec3 origPos(0, 0, 0);
 		PxTransform origTransform(origPos);
 
-		std::shared_ptr<DynamicSimulationComponent> simulationComponent = addComponent<DynamicSimulationComponent>();
+		std::shared_ptr<DynamicSimulationComponent> simulationComponent = createComponent<DynamicSimulationComponent>();
 		PxRigidDynamic &pxActor = simulationComponent->pxActor();
 		pxActor.setGlobalPose(origTransform);
 
@@ -128,5 +103,5 @@ IGameObject::IdType	GoCow::TypeId()
 
 }
 
-RegisterGameObjectType<GoCowImp> gRegisterActor;
+RegisterGameObjectType<GoCowImp> gRegisterGameObject;
 
