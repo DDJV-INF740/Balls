@@ -45,10 +45,7 @@ class GoSkyBoxImp: public GameObject<GoSkyBoxImp, SkyboxData>
 public: // IPoseInterface
 
 public:
-	static IGameObject::IdType TypeId()
-	{
-		return "Skybox";
-	}
+	static constexpr IdType TypeId = GoSkyBox::TypeId;
 
 	//-------------------------------------------------------------------------
 	//
@@ -72,16 +69,19 @@ public:
 	{}
 };
 
-//=============================================================================
-// CLASS SkyboxDesc
-//=============================================================================
-IGameObject::IdType GoSkyBox::TypeId()
+
+//-----------------------------------------------------------------------------
+//
+GameObjectDataRef GoSkyBox::loadData()
 {
-	return GoSkyBoxImp::TypeId();
+	return GoSkyBoxImp::loadData();
+}
+
+//-----------------------------------------------------------------------------
+//
+GameObjectRef GoSkyBox::createInstance(const GameObjectDataRef &aDataRef)
+{
+	return GoSkyBoxImp::createInstance(aDataRef);
 }
 
 
-//=============================================================================
-// REGISTER "Skybox"
-//=============================================================================
-RegisterGameObjectType<GoSkyBoxImp> gRegisterGameObject;

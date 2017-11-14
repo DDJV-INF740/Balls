@@ -78,8 +78,7 @@ public:
 
 	//-------------------------------------------------------------------------
 	//
-	static IdType TypeId()
-	{	return "TriggerActor"; }
+	static constexpr IdType TypeId = GoTriggerZone::TypeId;
 
 	//-------------------------------------------------------------------------
 	//
@@ -111,10 +110,16 @@ public:
 
 //-----------------------------------------------------------------------------
 //
-IGameObject::IdType GoTriggerZone::TypeId()
+GameObjectDataRef GoTriggerZone::loadData()
 {
-	return GoTriggerZoneImp::TypeId();
+	return GoTriggerZoneImp::loadData();
 }
 
-RegisterGameObjectType<GoTriggerZoneImp> gRegisterGameObject;
+//-----------------------------------------------------------------------------
+//
+GameObjectRef GoTriggerZone::createInstance(const GameObjectDataRef &aDataRef)
+{
+	return GoTriggerZoneImp::createInstance(aDataRef);
+}
+
 

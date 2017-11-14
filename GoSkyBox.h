@@ -2,12 +2,16 @@
 //=============================================================================
 // EXTERNAL DECLARATIONS
 //=============================================================================
-#include "Core/GameObjects/GameObjectFactory.h"
+#include "Core/GameObjects/IGameObject.h"
+#include "Core/GameObjects/IGameObject.h"
+#include "Engine/GameObjects/GameObject.h"
 
 using namespace engine;
 
-class GoSkyBox: public IGameObject
+class GoSkyBox : virtual public IGameObject
 {
 public:
-	static IdType TypeId();
+	static constexpr IdType TypeId = "GoSkyBox";
+	static GameObjectDataRef loadData();
+	static GameObjectRef createInstance(const GameObjectDataRef &aDataRef);
 };

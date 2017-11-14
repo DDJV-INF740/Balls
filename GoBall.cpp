@@ -79,8 +79,24 @@ class GoBallImp: public GoBall, public GameObject<GoBallImp, GoBallData>
 {
 
 public:
-	static IGameObject::IdType TypeId()
-	{ return "GoBall"; }
+	virtual IdType typeId() const
+	{ return GoBall::TypeId; }
+
+	//-------------------------------------------------------------------------
+	//
+	static GameObjectRef createInstance(const GameObjectDataRef &aDataRef)
+	{
+		return GameObject<GoBallImp, GoBallData>::createInstance(aDataRef);
+	}
+
+	//-------------------------------------------------------------------------
+	//
+	static std::shared_ptr<IGameObjectData> loadData()
+	{
+		std::shared_ptr<GoBallData> data = std::make_shared<GoBallData>();
+		data->load();
+		return data;
+	}
 
 	//-------------------------------------------------------------------------
 	//
@@ -116,8 +132,16 @@ public:
 
 //-----------------------------------------------------------------------------
 //
-IGameObject::IdType GoBall::TypeId()
-{	return GoBallImp::TypeId(); }
+GameObjectDataRef GoBall::loadData()
+{
+	return GoBallImp::loadData();
+}
 
-RegisterGameObjectType<GoBallImp> gRegisterGameObject;
+//-----------------------------------------------------------------------------
+//
+GameObjectRef GoBall::createInstance(const GameObjectDataRef &aDataRef)
+{
+	return GoBallImp::createInstance(aDataRef);
+}
+
 

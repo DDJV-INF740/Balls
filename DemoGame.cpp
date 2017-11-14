@@ -17,6 +17,7 @@
 #include "Engine/Components/PlayerComponent.h"
 #include "PxPhysicsAPI.h"
 #include "PlayerBehaviour.h"
+#include "Core/GameObjects/GameObjectFactory.h"
 
 #include "Engine/Managers/RenderManager.h"
 #include "Engine/Tasks/RenderTask.h"
@@ -27,6 +28,13 @@
 #include "Engine/Tasks/GameRulesTask.h"
 #include "Engine/Tasks/TimeTask.h"
 
+#include "Engine/Components/ComponentFactory.h"
+#include "Engine/Components/SimulationComponent.h"
+#include "Engine/Components/AIComponent.h"
+#include "Engine/Components/FollowPoseComponent.h"
+#include "Engine/Components/RenderComponent.h"
+#include "Engine/Components/RenderViewComponent.h"
+
 #include "Engine/Managers/WindowManager.h"
 #include "Engine/Managers/CameraManager.h"
 #include "Engine/Managers/SimulationManager.h"
@@ -35,6 +43,9 @@
 #include "Engine/Managers/GameLoopManager.h"
 #include "Engine/Managers/TimeManager.h"
 #include "Engine/Rendering/Camera.h"
+
+#include "GoCow.h"
+#include "GoBall.h"
 
 #include <memory>
 
@@ -66,15 +77,50 @@ public:
 	{
 		GameEngine::init();
 
-		createComponent<WindowManager>();
-		createComponent<RenderManager>();
-		createComponent<SimulationManager>();
-		createComponent<SpawnManager>();
-		createComponent<AIManager>();
-		createComponent<PlayerManager>();
-		createComponent<CameraManager>();
-		createComponent<GameLoopManager>();
-		createComponent<TimeManager>();
+		{
+			GameManagerFactory& factory = GameManagerFactory::Instance();
+			factory.registerType<WindowManager>();
+			factory.registerType<RenderManager>();
+			factory.registerType<SimulationManager>();
+			factory.registerType<SpawnManager>();
+			factory.registerType<AIManager>();
+			factory.registerType<PlayerManager>();
+			factory.registerType<CameraManager>();
+			factory.registerType<GameLoopManager>();
+			factory.registerType<TimeManager>();
+		}
+
+		{
+			ComponentFactory& factory = ComponentFactory::Instance();
+			factory.registerType<DynamicSimulationComponent>();
+			factory.registerType<StaticSimulationComponent>();
+			factory.registerType<AIComponent>();
+			factory.registerType<FollowPoseComponent>();
+			factory.registerType<KeyboardInputComponent>();
+			factory.registerType<PlayerComponent>();
+			factory.registerType<RenderComponent>();
+			factory.registerType<RenderViewComponent>();
+		}
+
+		{
+			GameObjectFactory::registerGameObjectType(Camera::TypeId, &Camera::createInstance, &Camera::loadData);
+			GameObjectFactory::registerGameObjectType(GoBall::TypeId, &GoBall::createInstance, &GoBall::loadData);
+			GameObjectFactory::registerGameObjectType(GoCow::TypeId, &GoCow::createInstance, &GoCow::loadData);
+			GameObjectFactory::registerGameObjectType(GoPlayer::TypeId, &GoPlayer::createInstance, &GoPlayer::loadData);
+			GameObjectFactory::registerGameObjectType(GoSkyBox::TypeId, &GoSkyBox::createInstance, &GoSkyBox::loadData);
+			GameObjectFactory::registerGameObjectType(GoTerrain::TypeId, &GoTerrain::createInstance, &GoTerrain::loadData);
+			GameObjectFactory::registerGameObjectType(GoTriggerZone::TypeId, &GoTriggerZone::createInstance, &GoTriggerZone::loadData);
+		}
+
+		ensureManager<WindowManager>();
+		ensureManager<RenderManager>();
+		ensureManager<SimulationManager>();
+		ensureManager<SpawnManager>();
+		ensureManager<AIManager>();
+		ensureManager<PlayerManager>();
+		ensureManager<CameraManager>();
+		ensureManager<GameLoopManager>();
+		ensureManager<TimeManager>();
 
 		addTask<SpawnTask>(SPAWNTASK);
 		addTask<RenderTask>(RENDERTASK);
@@ -136,6 +182,6 @@ void DemoGame::loadLevel()
 	Game<ISpawnManager>()->spawn<GoTriggerZone>(PxTransform(PxVec3(20, 0, 20)));
 
 	// Camera
-	Game<ISpawnManager>()->spawn<ICamera>(PxTransform(PxVec3(0, 0, 0)));
+	Game<ISpawnManager>()->spawn<Camera>(PxTransform(PxVec3(0, 0, 0)));
 }
 

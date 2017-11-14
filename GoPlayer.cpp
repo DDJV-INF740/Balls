@@ -78,9 +78,9 @@ public:
 public:
 	//-------------------------------------------------------------------------
 	//
-	static IGameObject::IdType TypeId()
+	virtual IdType typeId() const
 	{
-		return "GoPlayer";
+		return GoPlayer::TypeId;
 	}
 
 	//-------------------------------------------------------------------------
@@ -90,6 +90,13 @@ public:
 		std::shared_ptr<GoPlayerData> data = std::make_shared<GoPlayerData>();
 		data->load();
 		return data;
+	}
+
+	//-------------------------------------------------------------------------
+	//
+	static GameObjectRef createInstance(const GameObjectDataRef &aDataRef)
+	{
+		return GameObject<GoPlayerImp, GoPlayerData>::createInstance(aDataRef);
 	}
 
 	//-------------------------------------------------------------------------
@@ -127,9 +134,19 @@ public:
 	}
 };
 
+
 //-----------------------------------------------------------------------------
 //
-IGameObject::IdType GoPlayer::TypeId()
-{	return GoPlayerImp::TypeId(); }
+GameObjectDataRef GoPlayer::loadData()
+{
+	return GoPlayerImp::loadData();
+}
 
-RegisterGameObjectType<GoPlayerImp> gRegisterGameObject;
+//-----------------------------------------------------------------------------
+//
+GameObjectRef GoPlayer::createInstance(const GameObjectDataRef &aDataRef)
+{
+	return GoPlayerImp::createInstance(aDataRef);
+}
+
+

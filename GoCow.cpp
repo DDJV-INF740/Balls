@@ -64,7 +64,7 @@ public:
 
 	//-------------------------------------------------------------------------
 	//
-	static IGameObject::IdType	TypeId() { return "GoCow"; }
+	static constexpr IdType TypeId = GoCow::TypeId;
 
 public:
 	//-------------------------------------------------------------------------
@@ -97,11 +97,16 @@ public:
 
 //-----------------------------------------------------------------------------
 //
-IGameObject::IdType	GoCow::TypeId()
+GameObjectDataRef GoCow::loadData()
 {
-	return GoCowImp::TypeId();
-
+	return GoCowImp::loadData();
 }
 
-RegisterGameObjectType<GoCowImp> gRegisterGameObject;
+//-----------------------------------------------------------------------------
+//
+GameObjectRef GoCow::createInstance(const GameObjectDataRef &aDataRef)
+{
+	return GoCowImp::createInstance(aDataRef);
+}
+
 

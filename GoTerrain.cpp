@@ -52,7 +52,7 @@ public:
 
 	//-------------------------------------------------------------------------
 	//
-	static IdType GoTerrainImp::TypeId() { return "Terrain"; }
+	static constexpr IdType TypeId = GoTerrain::TypeId;
 
 	//-------------------------------------------------------------------------
 	//
@@ -83,14 +83,19 @@ public:
 	{}
 };
 
-IGameObject::IdType GoTerrain::TypeId()
+
+//-----------------------------------------------------------------------------
+//
+GameObjectDataRef GoTerrain::loadData()
 {
-	return GoTerrainImp::TypeId();
+	return GoTerrainImp::loadData();
+}
+
+//-----------------------------------------------------------------------------
+//
+GameObjectRef GoTerrain::createInstance(const GameObjectDataRef &aDataRef)
+{
+	return GoTerrainImp::createInstance(aDataRef);
 }
 
 
-
-//=============================================================================
-// REGISTER Terrain
-//=============================================================================
-RegisterGameObjectType<GoTerrainImp> gRegisterGameObject;

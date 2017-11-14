@@ -1,10 +1,15 @@
 #pragma once
 #include "Core/GameObjects/IGameObject.h"
+#include "Core/GameObjects/IGameObject.h"
+#include "Engine/GameObjects/GameObject.h"
+
 
 using namespace engine;
 
-class GoTerrain: public IGameObject
+class GoTerrain : virtual public IGameObject
 {
 public:
-	static IdType TypeId();
+	static constexpr IdType TypeId = "GoTerrain";
+	static GameObjectDataRef loadData();
+	static GameObjectRef createInstance(const GameObjectDataRef &aDataRef);
 };
